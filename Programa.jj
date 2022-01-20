@@ -1,0 +1,729 @@
+PARSER_BEGIN(Programa)
+import java.util.logging.*;
+import java.io.*;
+import java.util.ArrayList;
+public class Programa
+{
+  /*public static void main( String args []) throws ParseException{
+    try
+    {
+      Programa analizador = new Programa( System.in );
+      analizador.Iniciar();
+      System.out.println("La cadena fue aceptada correctamente");
+    }
+    catch(ParseException e)
+    {
+      System.out.println(e.getMessage());
+      System.out.println("Hubo un error y la cadena no fue acepatada");
+    }
+  }*/
+  
+    public static void main(String[] args) {
+		try {
+            Programa analizador = new Programa(new BufferedReader(new FileReader("./expresiones.txt")));
+            analizador.Iniciar();
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+        }
+        catch (FileNotFoundException e) {
+            System.err.println(e.getMessage());
+        } 
+         catch(TokenMgrError e){
+            System.err.println(e.getMessage());
+        }
+    }
+}
+PARSER_END(Programa)
+
+/**Tokens que seran ignorados durante el analisis*/
+SKIP : {
+      " "
+    | "\t"
+    | "\r"
+    | "\n"
+}
+
+//Declaracion de tokens
+
+//Token para impresion de caractreres
+TOKEN : {
+	<IMPRESION:"print"|"println"|"printf"|"WriteLine"|"Write"|"puts"|"show"|"putStrLn"|"putStr"|"echo"|"cout">{System.out.println("IMPRESION -> "+image);}
+}
+
+//Token para operadores realcionales
+TOKEN : {
+	<OPERADORRELACIONAL:"=="|"!="|"<="|">="|"<"|">">{System.out.println("OPERADORRELACIONAL -> "+image);}
+}
+
+//Token para la caputa de datos
+TOKEN : {
+	<CAPTURARDATO:"getchar"|"getch"|"ReadLine"|"Read"|"gets"|"nextLine"|"input"|"cin">{System.out.println("CAPTURARDATO -> "+image);}
+}
+
+//Token para operaciones con caracter
+TOKEN : {
+	<OPERACIONESCARACTER:"atoi"|"isalnum"|"isalpha"|"islower"|"isupper"|"isdigit"|"isspace"|"isblank"|"tolower"|"toupper">{System.out.println("OPERACIONESCARACTER ->  "+image);}
+}
+
+//Token para manejo de archivos
+TOKEN : {
+	<ABRIRARCHIVO:"fopen">{System.out.println("ABRIRARCHIVO");}
+	|<CERRARARCHIVO:"fclose">{System.out.println("CERRARARCHIVO");}
+	|<RENOMBRARARCHIVO:"rename">{System.out.println("RENOMBRARARCHIVO");}
+	|<REMOVERARCHIVO:"remove">{System.out.println("REMOVERARCHIVO");}
+	|<ARCHIVOTEMPORAL:"tmpfile">{System.out.println("ARCHIVOTEMPORAL");}
+	|<LEERARCHIVO:"fscanf">{System.out.println("LEERARCHIVO");}
+	|<IMPRIMIRARCHIVO:"fprintf">{System.out.println("IMPRIMIRARCHIVO");}
+}
+
+//Token para limpiar el buffer
+TOKEN : {
+	<LIMPIARBUFFER:"fflush">{System.out.println("LIMPIARBUFFER");}
+}
+
+//Token para operaciones con String
+TOKEN : {
+	<COPIARCADENA:"strcpy">{System.out.println("COPIARCADENA");}
+	|<COMPARARCADENA:"strcmp">{System.out.println("COMPARARCADENA");}
+	|<ENCONTRARCADENA:"strfind">{System.out.println("ENCONTRARCADENA");}
+	|<CONCATENARCADENA:"strcat">{System.out.println("CONCATENARCADENA");}
+	|<LONGITUDCADENA:"strlen">{System.out.println("LONGITUDCADENA");}
+}
+
+//Token para operaciones matematicas
+TOKEN : {
+	<MENORENTERO:"ceiling">{System.out.println("MENORENTERO");}
+	|<FUNCIONBESSEL:"jn">{System.out.println("FUNCIONBESSEL");}
+	|<LOGARITMO:"log"|"log10">{System.out.println("LOGARITMO ->"+image);}
+	|<RAIZ:"sqrt">{System.out.println("RAIZ");}
+	|<POTENCIA:"pow">{System.out.println("POTENCIA");}
+	|<EXPONENCIAL:"exp">{System.out.println("EXPONENCIAL");}
+	|<FUNCIONESTRIGONOMETRICAS:"cos"|"sin"|"tan">{System.out.println("FUNCIONESTRIGONOMETRICAS -> "+image);}
+	|<FUNCIONESTRIGONOMETRICASINV:"acos"|"asin"|"atan">{System.out.println("FUNCIONESTRIGONOMETRICASINV -> "+image);}
+	|<TRUNCARVALOR:"trunc">{System.out.println("TRUNCARVALOR");}
+	|<REDONDEONUMERO:"ceil"|"floor"|"round">{System.out.println("REDONDEONUMERO -> "+image);}
+	|<NUMEROALEATORIO:"rand">{System.out.println("NUMEROALEATORIO");}
+	|<VALORABSOLUTO:"abs"|"labs">{System.out.println("VALORABSOLUTO -> "+image);}
+}
+
+//Token para operaciones de memoria
+TOKEN : {
+	<ASIGNARMEMORIA:"malloc"|"realloc"|"calloc">{System.out.println("ASIGNARMEMORIA -> "+image);}
+	|<LIBERARMEMORIA:"free">{System.out.println("LIBERARMEMORIA");}
+}
+
+//Token para simbolos
+TOKEN : {
+	<PARENTESISAPERTURA:"(">{System.out.println("PARENTESISAPERTURA");}
+	|<PARENTESISCERRADURA:")">{System.out.println("PARENTESISCERRADURA");}
+	|<LLAVEAPERTURA:"{">{System.out.println("LLAVEAPERTURA");}
+	|<LLAVECERRADURA:"}">{System.out.println("LLAVECERRADURA");}
+	|<CORCHETEAPERTURA:"[">{System.out.println("CORCHETEAPERTURA");}
+	|<CORCHETECERRADURA:"]">{System.out.println("CORCHETECERRADURA");}
+	|<PUNTO:".">{System.out.println("PUNTO");}
+	|<COMA:",">{System.out.println("COMA");}
+	|<SEMICOLON:";">{System.out.println("SEMICOLON");}
+}
+
+//Token para operacion de dormir
+TOKEN : {
+	<DORMIR:"sleep">{System.out.println("DORMIR");}
+}
+
+//Token para delay
+TOKEN : {
+	<RETRASAR:"delay">{System.out.println("RETRASAR");}
+}
+
+//Token para diectorio
+TOKEN : {
+	<DIRECTORIO:"dir">{System.out.println("DIRECTORIO");}
+}
+
+//Token para llamar una funcion
+TOKEN : {
+	<LLAMAR:"call">{System.out.println("LLAMAR");}
+}
+
+//Token para modulo
+TOKEN : {
+	<MODULO:"module">{System.out.println("MODULO");}
+}
+
+//Token para declarar un tipo nuevo
+TOKEN : {
+	<NUEVOTIPO:"newType">{System.out.println("NUEVOTIPO");}
+}
+
+//Token para lista
+TOKEN : {
+	<LISTA:"List">{System.out.println("LISTA");}
+	|<PRIMEROLISTA:"first"|"head">{System.out.println("PRIMEROLISTA -> "+image);}
+	|<ULTIMOLISTA:"last"|"tail">{System.out.println("ULTIMOLISTA -> "+image);}
+}
+
+//Token para tupla
+TOKEN : {
+	<TUPLA:"tuple">{System.out.println("TUPLA");}
+}
+
+//Token para pulsos de reloj
+TOKEN : {
+	<PULSOSDERELOJ:"clock">{System.out.println("PULSOSDERELOJ");}
+}
+
+//Token para opreciones de string a numero
+TOKEN : {
+	<OPERACIONESSTRINGNUMERO:"atol"|"strtod"|"atof"|"strtol"|"strtoll"|"strtoull">{System.out.println("OPERACIONESSTRINGNUMERO -> "+image);}
+}
+
+//Token para ordenar 
+TOKEN : {
+	<ORDENAR:"sort">{System.out.println("ORDENAR");}
+}
+
+//Token para rango
+TOKEN : {
+	<RANGO:"range">{System.out.println("RANGO");}
+}
+
+//Token para operaciones con bits
+TOKEN : {
+	<OPERACIONESBIT:">>"|"<<"|"~">{System.out.println("OPERACIONESBIT -> "+image);}
+}
+
+//Token para ayuda
+TOKEN : {
+	<AYUDA:"help">{System.out.println("AYUDA");}
+}
+
+//Token para metodo quicksort
+TOKEN : {
+	<QUICKSORT:"qsort">{System.out.println("QUICKSORT");}
+}
+
+//Token para cola
+TOKEN : {
+	<COLA:"queue">{System.out.println("COLA");}
+}
+
+//Token para funciones del cronometro
+TOKEN : {
+	<INICIOCRONOMETRO:"tic">{System.out.println("INICIOCRONOMETRO");}
+	|<FINCRONOMETRO:"toc">{System.out.println("FINCRONOMETRO");}
+}
+
+//Token para set y get
+TOKEN : {
+	<OBTENER:"get">{System.out.println("OBTENER");}
+	|<ASIGNAR:"set">{System.out.println("ASIGNAR");}
+}
+
+//Token para Sockets
+TOKEN : {
+	<SOCKET:"Socket">{System.out.println("SOCKET");}
+	|<SERVIDORSOCKET:"ServerSocket">{System.out.println("SERVIDORSOCKET");}
+}
+
+//Token para entrada de datos
+TOKEN : {
+	<ENTRADADATOS:"InputStream">{System.out.println("ENTRADADATOS");}
+}
+
+//TOken para salida de datos en el cliente
+TOKEN : {
+	<SALIDADATOSCLIENTE:"OutputStream">{System.out.println("SALIDADATOSCLIENTE");}
+}
+
+TOKEN : {
+	<SALIDADATOS:"DataOutputStream">{System.out.println("SALIDADATOS");}
+}
+
+//Token para funcion de remplazar
+TOKEN : {
+	<REMPLAZAR:"replace">{System.out.println("REMPLAZAR");}
+}
+
+//Token para convertir
+TOKEN : {
+	<CONVERTIR:"Convert">{System.out.println("CONVERTIR");}
+}
+
+//Token para longitud
+TOKEN : {
+	<LONGITUD:"length">{System.out.println("LONGITUD");}
+}
+
+//Token para operaciones de la pila
+TOKEN : {
+	<PILA:"stack">{System.out.println("PILA");}
+	|<METERDATOPILA:"push">{System.out.println("METERDATOPILA");}
+	|<SACARDATOPILA:"pop">{System.out.println("SACARDATOPILA");}
+	|<CLONARPILA:"clone">{System.out.println("CLONARPILA");}
+}
+
+//Token para MCD
+TOKEN : {
+	<MCD:"gcd">{System.out.println("MCD");}
+}
+
+//Token para MCM
+TOKEN : {
+	<MCM:"lcm">{System.out.println("MCM");}
+}
+
+//Token para analizar gramatica
+TOKEN : {
+	<ANALIZAGRAMATICA:"Parse">{System.out.println("ANALIZAGRAMATICA");}
+}
+
+//Token para even
+TOKEN : {
+	<PAR:"even">{System.out.println("PAR");}
+}
+
+//Token para funcion de peternece
+TOKEN : {
+	<PERTENECE:"elem">{System.out.println("PERTENECE");}
+}
+
+//Token para all
+TOKEN : {
+	<TODOS:"all">{System.out.println("TODOS");}
+}
+
+//Token para any
+TOKEN : {
+	<ALGUNO:"any">{System.out.println("ALGUNO");}
+}
+
+TOKEN : /* Booleano */
+{
+<BOOLEANO: "true" | "false">{System.out.println("BOOLEANO -> "+ image);} //1
+}
+TOKEN: /* Ciclos */
+{
+<CICLO: "do"| "for" | "while" | "loop">{System.out.println("CICLO -> "+ image);} //2
+}
+TOKEN:
+{
+<CONDICION: ("if")+>{System.out.println("CONDICION");} //3
+}
+TOKEN:
+{
+<SINO: ("else")+>{System.out.println("SINO");} //3
+}
+TOKEN:
+{
+<CASO: ("case")+>{System.out.println("CASO");} //4
+}
+TOKEN:
+{
+<CONSTANTE: "const">{System.out.println("CONSTANTE");} //5
+}
+TOKEN:
+{
+<CLASE: "class">{System.out.println("CLASE");} //6
+}
+TOKEN:
+{
+<LIMPIARCONSOLA: "clear">{System.out.println("LIMPIARCONSOLA");} //7
+}
+TOKEN:
+{
+<DETENER: "break">{System.out.println("DETENER");} //8
+}
+TOKEN:
+{
+<ESTATICO: "static">{System.out.println("ESTATICO");} //9
+}
+TOKEN:
+{
+<FLUJOCONTROL: "switch">{System.out.println("FLUJOCONTROL");} //10
+}
+TOKEN:
+{
+<MANEJOEXEPCIONES: "try"| "catch" | "throw" | "Raise">{System.out.println("MANEJOEXEPCIONES -> "+ image);} //11
+}
+TOKEN:
+{
+<OPTIMIZACION: "volatile">{System.out.println("OPTIMIZACION");} //12
+}
+TOKEN:
+{
+<PORDEFECTO: "default">{System.out.println("PORDEFECTO");} //13
+}
+TOKEN:
+{
+<REGRESAR: "return" | "yield">{System.out.println("REGRESAR -> "+ image);} //14
+}
+TOKEN: /*TIPOS*/
+{
+<TIPOACCESO: "global" | "private" | "protected" | "public" | "transient" | "internal" | "abstract">{System.out.println("TIPOACCESO -> "+ image);} //15
+|<TIPODATO: "boolean" | "byte" | "char" | "double" | "float" | "int" | "varchar" | "decimal" | "tinyint"| "String" | "ushort" | "sbyte">{System.out.println("TIPODATO -> "+ image);} //16
+|<TIPOMETODO: "void">{System.out.println("TIPOMETODO");} //17
+}
+TOKEN:
+{
+<ENUMERAR: "enum">{System.out.println("ENUMERAR");} //18
+}
+TOKEN:
+{
+<SIZE: "sizeof">{System.out.println("SIZE");} //19
+}
+TOKEN:
+{
+<ESTRUCTURA: "struct">{System.out.println("ESTRUCTURA");} //20
+}
+TOKEN:
+{
+<UNION: "union">{System.out.println("UNION");} //21
+}
+TOKEN:
+{
+<DESDE: "from">{System.out.println("DESDE");} //22
+}
+TOKEN:
+{
+<CONTINUAR: "continue">{System.out.println("CONTINUAR");} //23
+}
+TOKEN:
+{
+<IRA: "goto" | "jump">{System.out.println("IRA -> "+ image);} //24
+}
+TOKEN:
+{
+<PAQUETE: "package">{System.out.println("PAQUETE");} //25
+}
+TOKEN:
+{
+<OTROLENGUAJE: "native">{System.out.println("OTROLENGUAJE");} //26
+}
+TOKEN:
+{
+<EXPORTAR: "export">{System.out.println("EXPORTAR");} //27
+}
+TOKEN:
+{
+<COMPROBARVALOREN: "in">{System.out.println("COMPROBARVALOREN");} //28
+}
+TOKEN:
+{
+<ES: "is">{System.out.println("ES");} //29
+}
+TOKEN:
+{
+<BORRAR: "del" | "drop">{System.out.println("BORRAR -> "+ image);} //30
+}
+TOKEN:
+{
+<NOOPERACION: "nop">{System.out.println("NOOPERACION");} //31
+}
+TOKEN:
+{
+<DEFINIR: "#define">{System.out.println("DEFINIR");} //32
+}
+TOKEN:
+{
+<INCLUIR: "#include">{System.out.println("INCLUIR");} //33
+}
+TOKEN:
+{
+<SINCRONIZAR: "synchronized">{System.out.println("SINCRONIZAR");} //34
+}
+TOKEN:
+{
+<HILO: "Thread">{System.out.println("HILO");} //35
+}
+TOKEN:
+{
+<NUMEROSINSIGNO: "unsigned">{System.out.println("NUMEROSINSIGNO");} //36
+}
+TOKEN:
+{
+<NUEVAINSTANCIA: "new">{System.out.println("NUEVAINSTANCIA");} //37
+}
+TOKEN:
+{
+<ARREGLO: "Array">{System.out.println("ARREGLO");} //38
+}
+TOKEN:
+{
+<IMPLEMENTAR: "implements">{System.out.println("IMPLEMENTAR");} //39
+}
+TOKEN:
+{
+<SALIR: "exit" | "quit">{System.out.println("SALIR -> "+ image);} //40
+}
+TOKEN:
+{
+<CERRAR: "close">{System.out.println("CERRAR");} //41
+}
+TOKEN:
+{
+<EMPEZAR: "begin">{System.out.println("EMPEZAR");} //42
+}
+TOKEN:
+{
+<TERMINAR: "end">{System.out.println("TERMINAR");} //43
+}
+TOKEN:
+{
+<PROCEDIMIENTO: "procedure">{System.out.println("PROCEDIMIENTO");} //44
+}
+TOKEN:
+{
+<EMPEZARMODULO: "unit">{System.out.println("EMPEZARMODULO");} //45
+}
+TOKEN:
+{
+<UNIDADESAUTILIZAR: "uses">{System.out.println("UNIDADESAUTILIZAR");} //46
+}
+TOKEN: /*Operadores*/
+{
+<OPERADORLOGICO: "and" | "not" | "or" | "xor" | "&&" | "||" | "!" | "^">{System.out.println("OPERADORLOGICO -> "+ image);} //47
+|<OPERADORMATEMATICO: "/" | "*"| "-" | "+" | "%">{System.out.println("OPERADORMATEMATICO -> "+ image);} //48
+}
+TOKEN:
+{
+<ASIGNACION: "=">{System.out.println("ASIGNACION");} //49
+}
+TOKEN:
+{
+<TIEMPO: "date" | "time">{System.out.println("TIEMPO -> "+ image);} //50
+}
+TOKEN: /*SQL*/
+{
+<CREAR: "create">{System.out.println("CREAR");} //51
+|<USAR: "use">{System.out.println("USAR");} //52
+|<TABLA: "table">{System.out.println("TABLA");} //53
+|<EJECUTAR: "exec">{System.out.println("EJECUTAR");} //54
+|<LLAVE: "key">{System.out.println("LLAVE");} //55
+|<INSERTAR: "insert">{System.out.println("INSERTAR");} //56
+|<VALORES: "values">{System.out.println("VALORES");} //57
+|<CONTAR: "count">{System.out.println("CONTAR");} //58
+|<FORANEO: "foreign">{System.out.println("FORANEO");} //59
+|<VISTA: "view">{System.out.println("VISTA");} //60
+|<SELECCIONAR: "select">{System.out.println("SELECCIONAR");} //61
+|<UNIR: "join">{System.out.println("UNIR");} //62
+}
+TOKEN:
+{
+<TIPO: "type">{System.out.println("TIPO");} //63
+}
+TOKEN: /*Maximos y minimos*/
+{
+<MAXIMO: "max">{System.out.println("MAXIMO");} //64
+|<MAXIMOLISTA: "maximum">{System.out.println("MAXIMOLISTA");} //66
+|<MINIMO: "min">{System.out.println("MINIMO");} //67
+|<MINIMOLISTA: "minimum">{System.out.println("MINIMOLISTA");} //68
+}
+TOKEN:
+{
+<PROMEDIO: "avg">{System.out.println("PROMEDIO");} //69
+}
+TOKEN:
+{
+<QUITARESPACIOS: "ltrim">{System.out.println("QUITARESPACIOS");} //70
+}
+TOKEN:
+{
+<REPLICAR: "replicate">{System.out.println("REPLICAR");} //71
+}
+TOKEN:
+{
+<VOLTEAR: "reverse">{System.out.println("VOLTEAR");} //72
+}
+TOKEN: /*Especiales*/
+{
+<FORMATOENTRADA: "%s" | "%d" | "%fi">{System.out.println("FORMATOENTRADA -> "+ image);}
+|<COMENTAR: "//">{System.out.println("COMENTAR");} //75
+}
+TOKEN:
+{
+  <ACCESOCLASE: "base" | "super"> {System.out.println("ACCESOCLASE -> "+ image);}
+}
+TOKEN:
+{
+  <AFIRMACONDICION: "assert"> {System.out.println("AFIRMACONDICION");}
+}
+//Token para identificador
+TOKEN: {
+	  <IDENTIFICADOR:(["a"-"z","A"-"Z"]) (["0"-"9","_","a"-"z","A"-"Z"])*>
+	  /*{System.out.println("IDENTIFICADOR\t"+image);}*/
+}
+
+void Iniciar() :
+{
+	Token t = null;
+	ArrayList<String> NombreVariables = new ArrayList<String>();
+	String nombre;
+}
+{
+  (
+	<CAPTURARDATO>|
+	<OPERACIONESCARACTER>|
+	<ABRIRARCHIVO>|
+	<CERRARARCHIVO>|
+	<RENOMBRARARCHIVO>|
+	<REMOVERARCHIVO>|
+	<ARCHIVOTEMPORAL>|
+	<LEERARCHIVO>|
+	<IMPRIMIRARCHIVO>|
+	<LIMPIARBUFFER>|
+	<COPIARCADENA>|
+	<COMPARARCADENA>|
+	<ENCONTRARCADENA>|
+	<CONCATENARCADENA>|
+	<LONGITUDCADENA>|
+	<MENORENTERO>|
+	<FUNCIONBESSEL>|
+	<LOGARITMO>|
+	<RAIZ>|
+	<POTENCIA>|
+	<EXPONENCIAL>|
+	<FUNCIONESTRIGONOMETRICAS>|
+	<FUNCIONESTRIGONOMETRICASINV>|
+	<TRUNCARVALOR>|
+	<REDONDEONUMERO>|
+	<NUMEROALEATORIO>|
+	<VALORABSOLUTO>|
+	<ASIGNARMEMORIA>|
+	<LIBERARMEMORIA>|
+	<PARENTESISAPERTURA>|
+	<PARENTESISCERRADURA>|
+	<LLAVEAPERTURA>|
+	<LLAVECERRADURA>|
+	<CORCHETEAPERTURA>|
+	<CORCHETECERRADURA>|
+	<PUNTO>|
+	<COMA>|
+	<SEMICOLON>|
+	<DORMIR>|
+	<RETRASAR>|
+	<DIRECTORIO>|
+	<LLAMAR>|
+	<MODULO>|
+	<NUEVOTIPO>|
+	<LISTA>|
+	<PRIMEROLISTA>|
+	<ULTIMOLISTA>|
+	<TUPLA>|
+	<PULSOSDERELOJ>|
+	<OPERACIONESSTRINGNUMERO>|
+	<ORDENAR>|
+	<RANGO>|
+	<OPERACIONESBIT>|
+	<AYUDA>|
+	<QUICKSORT>|
+	<COLA>|
+	<INICIOCRONOMETRO>|
+	<FINCRONOMETRO>|
+	<OBTENER>|
+	<ASIGNAR>|
+	<SOCKET>|
+	<SERVIDORSOCKET>|
+	<ENTRADADATOS>|
+	<SALIDADATOSCLIENTE>|
+	<SALIDADATOS>|
+	<REMPLAZAR>|
+	<CONVERTIR>|
+	<LONGITUD>|
+	<PILA>|
+	<METERDATOPILA>|
+	<SACARDATOPILA>|
+	<CLONARPILA>|
+	<MCD>|
+	<MCM>|
+	<ANALIZAGRAMATICA>|
+	<PAR>|
+	<PERTENECE>|
+	<TODOS>|
+	<OPERADORRELACIONAL>|
+	<IMPRESION>|
+	<ALGUNO>|
+	<BOOLEANO>|
+	<CICLO>|
+	<CONDICION>|
+	<CASO>|
+	<CONSTANTE>|
+	<CLASE>| 
+	<LIMPIARCONSOLA>|
+	<DETENER>|
+	<ESTATICO>|
+	<FLUJOCONTROL>|
+	<MANEJOEXEPCIONES>|
+	<OPTIMIZACION>|
+	<PORDEFECTO>|
+	<SINO>|
+	<REGRESAR>|
+	<TIPOACCESO>|
+	<TIPODATO>|
+	<TIPOMETODO>|
+	<ENUMERAR>|
+	<SIZE>|
+	<ESTRUCTURA>|
+	<UNION>|
+	<DESDE>|
+	<CONTINUAR>|
+	<IRA>|
+	<PAQUETE>|
+	<OTROLENGUAJE>|
+	<EXPORTAR>|
+	<COMPROBARVALOREN>|
+	<ES>|
+	<BORRAR>|
+	<NOOPERACION>|
+	<DEFINIR>|
+	<INCLUIR>|
+	<SINCRONIZAR>|
+	<HILO>|
+	<NUMEROSINSIGNO>|
+	<NUEVAINSTANCIA>|
+	<ARREGLO>|
+	<IMPLEMENTAR>|
+	<SALIR>|
+	<CERRAR>|
+	<EMPEZAR>|
+	<TERMINAR>|
+	<PROCEDIMIENTO>|
+	<EMPEZARMODULO>|
+	<UNIDADESAUTILIZAR>|
+	<OPERADORLOGICO>|
+	<OPERADORMATEMATICO>|
+	<ASIGNACION>|
+	<TIEMPO>|
+	<CREAR>|
+	<USAR>|
+	<TABLA>|
+	<EJECUTAR>|
+	<LLAVE>|
+	<INSERTAR>|
+	<VALORES>|
+	<CONTAR>|
+	<FORANEO>|
+	<VISTA>|
+	<TIPO>|
+	<MAXIMO>|
+	<MAXIMOLISTA>|
+	<MINIMO>|
+	<MINIMOLISTA>|
+	<PROMEDIO>|
+	<SELECCIONAR>|
+	<UNIR>|
+	<QUITARESPACIOS>|
+	<REPLICAR>|
+	<VOLTEAR>|
+	<FORMATOENTRADA>|
+	<COMENTAR>|
+	<ACCESOCLASE>|
+	<AFIRMACONDICION>|
+	t = <IDENTIFICADOR>{
+		nombre = t.image;
+		if(!NombreVariables.contains(nombre)) {
+			NombreVariables.add(nombre);
+		}
+		System.out.println("IDENTIFICADOR -> "+NombreVariables.indexOf(nombre));
+	}
+  ) + <EOF>
+}
